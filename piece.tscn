@@ -1,11 +1,21 @@
 [gd_scene load_steps=3 format=3 uid="uid://db40yeb6s1q1"]
 
 [ext_resource type="Script" uid="uid://dch0vkg0tes4u" path="res://piece.gd" id="1_3makh"]
-[ext_resource type="Texture2D" uid="uid://cy3lqry0fluo2" path="res://LightPawn.webp" id="2_hisf2"]
+[ext_resource type="Texture2D" uid="uid://b20mjlc38q4pl" path="res://Chess_Pieces_Sprite.svg" id="2_hisf2"]
 
 [node name="piece" type="Node2D"]
 script = ExtResource("1_3makh")
 
-[node name="LightPawn" type="Sprite2D" parent="."]
+[node name="sprite" type="Sprite2D" parent="."]
 texture = ExtResource("2_hisf2")
 centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 135, 135)
+
+[node name="mousearea" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 129.0
+offset_bottom = 136.0

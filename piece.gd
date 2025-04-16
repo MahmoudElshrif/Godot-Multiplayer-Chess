@@ -1,34 +1,58 @@
 extends Node2D
+class_name Piece
 
-signal select(piece)
+signal _select(piece)
 
-@export var is_white : bool = true
+@export var is_white : bool:
+	set(value): 
+		is_white = value
+		set_iswhite()
+	get: return is_white
 
-const pieces = {
-	"P" : 0,
-	"K" : 1,
-	"Q" : 2,
-	"N" : 3,
-	"B" : 4,
-	"R" : 5
-}
+#const pieces = {
+	#"k" : 0,
+	#"q" : 1,
+	#"b" : 2,
+	#"n" : 3,
+	#"r" : 4,
+	#"p" : 5,
+#}
 
-@export_enum("Pawn","King","Queen","Knight","Bishop","Rook") var pieceType : int
+@export_enum("King","Queen","Bishop","Knight","Rook","Pawn") var pieceType : int:
+	set(value):
+		pieceType = value
+		set_type()
+	get: return pieceType
 
-var t = 0
-var t2 = 0
+var boardpos = Vector2.ZERO
+
+func set_iswhite():
+	if(is_white):
+		$sprite.region_rect.position.y = 135
+
+func set_type():
+	$sprite.region_rect.position.x = $sprite.get_rect().size.x * pieceType
+
+func set_pos(pos : Vector2):
+	boardpos = pos
+	print(pos)
 
 func _ready() -> void:
-	var sc = Global.get_tile_size() / $LightPawn.get_rect().size.x 
-	scale = Vector2(sc,sc)
+	var sc = Global.get_tile_size() / ($sprite.get_rect().size.y) 
+	global_scale = Vector2(sc,sc)
 
 func _physics_process(delta: float) -> void:
-	t += 1
-	if(t > 7):
-		t = 0
-		t2 = (t2 + 1) % 8
-	global_position = Global.get_grid_pos(Vector2(t,t2))
-	#global_position = Global.get_pos_in_board(get_global_mouse_position())
+	global_position = Global.get_grid_pos(boardpos)
 	
-	if(Input.is_action_just_pressed("click")):
-		select.emit(self)
+	
+	if(Input.is_action_just_pressed("click") and mouse_hover):
+		_select.emit(self)
+
+func mouse_hover():
+	return $mousearea.get_global_rect().has_point(get_global_mouse_position())
+
+func select():
+	pass
+
+func unselect():
+	pass

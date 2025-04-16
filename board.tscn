@@ -41,3 +41,5 @@ script = ExtResource("1_p0ybc")
 material = SubResource("ShaderMaterial_p0ybc")
 offset_right = 567.0
 offset_bottom = 567.0
+
+[node name="pieces" type="Node2D" parent="."]

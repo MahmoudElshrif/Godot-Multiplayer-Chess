@@ -1,0 +1,43 @@
+[gd_scene load_steps=4 format=3 uid="uid://8ii3iv2odgl2"]
+
+[ext_resource type="Script" uid="uid://b1hnafjqoc37y" path="res://board.gd" id="1_p0ybc"]
+
+[sub_resource type="Shader" id="Shader_4mug4"]
+code = "shader_type canvas_item;
+
+uniform vec4 tile1 : source_color;
+uniform vec4 tile2 : source_color;
+
+void vertex() {
+	// Called for every vertex the material is visible on.
+}
+
+void fragment() {
+	vec2 pos = UV * 8.;
+	
+	if(((int(pos.x) + int(pos.y)) & 1) == 0){
+		COLOR = tile2;
+	}
+	else{
+		COLOR = tile1;
+	}
+}
+
+//void light() {
+//	// Called for every pixel for every light affecting the CanvasItem.
+//	// Uncomment to replace the default light processing function with this one.
+//}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p0ybc"]
+shader = SubResource("Shader_4mug4")
+shader_parameter/tile1 = Color(0.642562, 0.517317, 0.338184, 1)
+shader_parameter/tile2 = Color(0.866588, 0.856791, 0.769542, 1)
+
+[node name="board" type="Node2D"]
+script = ExtResource("1_p0ybc")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_p0ybc")
+offset_right = 567.0
+offset_bottom = 567.0

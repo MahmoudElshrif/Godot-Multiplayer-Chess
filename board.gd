@@ -2,9 +2,14 @@ extends Node2D
 class_name Board
 
 const PIECEOBJ := preload("res://piece.tscn")
+
+var selected : Piece = null
+
+
 func _ready() -> void:
 	Global.board = self
-	_init_from_map("pppppppp/rnbqknbr/8/3K4/8/8/RNBQKBNR/PPPPPPPP")
+	_init_from_map("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+	
 
 func get_pos_in_grid(pos : Vector2):
 	pos -= global_position
@@ -14,11 +19,6 @@ func get_pos_in_grid(pos : Vector2):
 	pos = pos.floor()
 	pos.x = clamp(pos.x,0,7)
 	pos.y = clamp(pos.y,0,7)
-	pos /= 8
-	pos *= $ColorRect.get_global_rect().size
-	
-	
-	pos += global_position
 	
 	return pos
 
@@ -60,6 +60,35 @@ func _init_from_map(map):
 			piece.pieceType = pieces[i.to_lower()]
 			piece.set_pos(Vector2(x,y))
 			x += 1
+
+func _input(event: InputEvent) -> void:
+	if(event.is_action_pressed("click")):
+		_check_select()
+
+
+func _check_select():
+	var pos = get_pos_in_grid(get_global_mouse_position())
+	print(pos)
+	
+	for i : Piece in $pieces.get_children():
+		if(i.boardpos == pos):
+			select(i)
+			return
+	
+	if(selected):
+		selected.boardpos = Vector2(pos)
+	
+	unselect() 
+
+func select(piece):
+	unselect()
+	selected = piece
+	selected.select()
+
+func unselect():
+	if(selected):
+		selected.unselect()
+	selected = null
 
 func get_tile_size():
 	return $ColorRect.get_global_rect().size.x / 8

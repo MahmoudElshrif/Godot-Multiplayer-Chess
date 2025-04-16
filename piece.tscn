@@ -15,7 +15,5 @@ region_rect = Rect2(0, 0, 135, 135)
 [node name="mousearea" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 129.0
-offset_bottom = 136.0
+offset_right = 135.0
+offset_bottom = 135.0

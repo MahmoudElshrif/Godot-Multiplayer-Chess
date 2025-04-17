@@ -42,4 +42,9 @@ material = SubResource("ShaderMaterial_p0ybc")
 offset_right = 567.0
 offset_bottom = 567.0
 
+[node name="selected" type="ColorRect" parent="."]
+offset_right = 71.0
+offset_bottom = 71.0
+color = Color(0.847059, 0.254902, 0.133333, 0.658824)
+
 [node name="pieces" type="Node2D" parent="."]

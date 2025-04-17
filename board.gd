@@ -59,6 +59,7 @@ func _init_from_map(map):
 			piece.is_white = i == i.to_lower()
 			piece.pieceType = pieces[i.to_lower()]
 			piece.set_pos(Vector2(x,y))
+			piece.global_position = get_grid_pos(Vector2(x,y))
 			x += 1
 
 func _input(event: InputEvent) -> void:
@@ -95,20 +96,23 @@ func capture(i : Piece):
 	i.capture()
 
 func move(i : Piece,pos : Vector2):
-	i.boardpos = pos
+	i.move_to(pos)
 
 func select(piece):
 	unselect()
 	selected = piece
 	selected.select()
+	$selected.show()
 
 func unselect():
 	if(selected):
 		selected.unselect()
 	selected = null
+	$selected.hide()
 
 func get_tile_size():
 	return $ColorRect.get_global_rect().size.x / 8
 
 func _physics_process(delta: float) -> void:
-	pass
+	if(selected):
+		$selected.global_position = get_grid_pos(selected.boardpos)

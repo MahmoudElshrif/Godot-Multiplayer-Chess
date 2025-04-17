@@ -36,7 +36,7 @@ func _ready() -> void:
 	global_scale = Vector2(sc,sc)
 
 func _physics_process(delta: float) -> void:
-	global_position = Global.get_grid_pos(boardpos)
+	#global_position = Global.get_grid_pos(boardpos)
 	
 	
 	if(Input.is_action_just_pressed("click")):
@@ -48,6 +48,12 @@ func _physics_process(delta: float) -> void:
 	
 func capture():
 	queue_free()
+
+func move_to(pos : Vector2):
+	boardpos = pos
+	var t = create_tween()
+	
+	t.tween_property(self,"global_position",Global.get_grid_pos(pos),0.2).set_trans(Tween.TRANS_SPRING)
 
 func mouse_hover():
 	return $mousearea.get_global_rect().has_point(get_global_mouse_position())

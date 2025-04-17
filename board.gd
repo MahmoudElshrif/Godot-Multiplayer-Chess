@@ -68,17 +68,34 @@ func _input(event: InputEvent) -> void:
 
 func _check_select():
 	var pos = get_pos_in_grid(get_global_mouse_position())
-	print(pos)
+	
+	if(selected and pos == selected.boardpos):
+		unselect()
+		return
 	
 	for i : Piece in $pieces.get_children():
 		if(i.boardpos == pos):
-			select(i)
+			if(selected):
+				if(selected.is_white != i.is_white):
+					capture(i)
+					move(selected,pos)
+					unselect()
+				else:
+					select(i)
+			else:
+				select(i)
 			return
 	
 	if(selected):
-		selected.boardpos = Vector2(pos)
+		move(selected,pos)
 	
 	unselect() 
+
+func capture(i : Piece):
+	i.capture()
+
+func move(i : Piece,pos : Vector2):
+	i.boardpos = pos
 
 func select(piece):
 	unselect()

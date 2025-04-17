@@ -46,6 +46,8 @@ func _physics_process(delta: float) -> void:
 			if(selected):
 				unselect()
 	
+func capture():
+	queue_free()
 
 func mouse_hover():
 	return $mousearea.get_global_rect().has_point(get_global_mouse_position())

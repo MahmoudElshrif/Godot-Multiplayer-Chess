@@ -77,12 +77,7 @@ func _check_select():
 	for i : Piece in $pieces.get_children():
 		if(i.boardpos == pos):
 			if(selected):
-				if(selected.is_white != i.is_white):
-					capture(i)
-					move(selected,pos)
-					unselect()
-				else:
-					select(i)
+				proccess_move(selected,i)
 			else:
 				select(i)
 			return
@@ -97,6 +92,14 @@ func capture(i : Piece):
 
 func move(i : Piece,pos : Vector2):
 	i.move_to(pos)
+
+func proccess_move(to_move : Piece, other_piece : Piece):
+	if(to_move.is_white != other_piece.is_white):
+		move(to_move,other_piece.boardpos)
+		capture(other_piece)
+		unselect()
+	else:
+		select(other_piece)
 
 func select(piece):
 	unselect()

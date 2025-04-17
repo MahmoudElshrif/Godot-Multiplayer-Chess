@@ -105,17 +105,17 @@ func select(piece):
 	unselect()
 	selected = piece
 	selected.select()
-	$selected.show()
+	$ColorRect.material.set_shader_parameter("selected",selected.boardpos)
+	
 
 func unselect():
+	$ColorRect.material.set_shader_parameter("selected",Vector2(-1,-1))
 	if(selected):
 		selected.unselect()
 	selected = null
-	$selected.hide()
 
 func get_tile_size():
 	return $ColorRect.get_global_rect().size.x / 8
 
 func _physics_process(delta: float) -> void:
-	if(selected):
-		$selected.global_position = get_grid_pos(selected.boardpos)
+	pass

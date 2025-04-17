@@ -53,7 +53,7 @@ func move_to(pos : Vector2):
 	boardpos = pos
 	var t = create_tween()
 	
-	t.tween_property(self,"global_position",Global.get_grid_pos(pos),0.2).set_trans(Tween.TRANS_SPRING)
+	t.tween_property(self,"global_position",Global.get_grid_pos(pos),0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 func mouse_hover():
 	return $mousearea.get_global_rect().has_point(get_global_mouse_position())

@@ -7,6 +7,8 @@ code = "shader_type canvas_item;
 
 uniform vec4 tile1 : source_color;
 uniform vec4 tile2 : source_color;
+uniform vec4 selectclr : source_color;
+uniform vec2 selected = vec2(-1,-1);
 
 void vertex() {
 	// Called for every vertex the material is visible on.
@@ -21,6 +23,9 @@ void fragment() {
 	else{
 		COLOR = tile1;
 	}
+	if(int(pos.x) == int(selected.x) && int(pos.y) == int(selected.y)){
+		COLOR.rgb = mix(COLOR.rgb,selectclr.rgb,selectclr.a);
+	}
 }
 
 //void light() {
@@ -33,6 +38,8 @@ void fragment() {
 shader = SubResource("Shader_4mug4")
 shader_parameter/tile1 = Color(0.642562, 0.517317, 0.338184, 1)
 shader_parameter/tile2 = Color(0.866588, 0.856791, 0.769542, 1)
+shader_parameter/selectclr = Color(0.921569, 0.858824, 0.152941, 0.52549)
+shader_parameter/selected = Vector2(3.515, 1)
 
 [node name="board" type="Node2D"]
 script = ExtResource("1_p0ybc")
@@ -41,10 +48,5 @@ script = ExtResource("1_p0ybc")
 material = SubResource("ShaderMaterial_p0ybc")
 offset_right = 567.0
 offset_bottom = 567.0
-
-[node name="selected" type="ColorRect" parent="."]
-offset_right = 71.0
-offset_bottom = 71.0
-color = Color(0.847059, 0.254902, 0.133333, 0.658824)
 
 [node name="pieces" type="Node2D" parent="."]

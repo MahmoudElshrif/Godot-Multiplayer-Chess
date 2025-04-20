@@ -1,6 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://bsbvobkcnsv6y"]
+[gd_scene load_steps=3 format=3 uid="uid://bsbvobkcnsv6y"]
 
 [ext_resource type="Script" uid="uid://cpdqku4t4vgdp" path="res://server_manager.gd" id="1_nxme1"]
+[ext_resource type="PackedScene" uid="uid://hj8jkapfu6eo" path="res://cursor.tscn" id="2_05mm3"]
 
 [node name="ServerManager" type="Node2D"]
 script = ExtResource("1_nxme1")
+
+[node name="player1" parent="." instance=ExtResource("2_05mm3")]
+visible = false
+modulate = Color(0.752941, 0.184314, 0.184314, 1)
+
+[node name="player2" parent="." instance=ExtResource("2_05mm3")]
+visible = false
+modulate = Color(0.186822, 0.351463, 0.886954, 1)
+position = Vector2(181, 201)
+rotation = -3.14159

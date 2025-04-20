@@ -5,5 +5,5 @@
 [node name="Node2D" type="Node2D"]
 
 [node name="board" parent="." instance=ExtResource("1_wtcfe")]
-position = Vector2(288, 29)
+position = Vector2(628, 360)
 scale = Vector2(1.13909, 1.13909)

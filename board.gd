@@ -25,7 +25,7 @@ func add_piece(data):
 	
 
 func get_pos_in_grid(pos : Vector2):
-	pos -= global_position
+	pos -= $ColorRect.global_position
 	
 	pos /= $ColorRect.get_global_rect().size
 	pos *= 8
@@ -37,7 +37,7 @@ func get_pos_in_grid(pos : Vector2):
 
 func get_grid_pos(pos: Vector2):
 	pos *= get_tile_size()
-	pos += global_position
+	pos += $ColorRect.global_position
 	
 	return pos
 

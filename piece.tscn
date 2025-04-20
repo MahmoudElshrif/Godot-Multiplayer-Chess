@@ -7,8 +7,10 @@
 script = ExtResource("1_3makh")
 
 [node name="sprite" type="Sprite2D" parent="."]
+position = Vector2(67.5, 67.5)
 texture = ExtResource("2_hisf2")
 centered = false
+offset = Vector2(-67.5, -67.5)
 region_enabled = true
 region_rect = Rect2(0, 0, 135, 135)
 

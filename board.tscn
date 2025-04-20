@@ -16,7 +16,7 @@ void vertex() {
 
 void fragment() {
 	vec2 pos = UV * 8.;
-	
+
 	if(((int(pos.x) + int(pos.y)) & 1) == 0){
 		COLOR = tile2;
 	}
@@ -46,7 +46,9 @@ script = ExtResource("1_p0ybc")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_p0ybc")
-offset_right = 567.0
-offset_bottom = 567.0
+offset_left = -283.5
+offset_top = -283.5
+offset_right = 283.5
+offset_bottom = 283.5
 
 [node name="pieces" type="Node2D" parent="."]

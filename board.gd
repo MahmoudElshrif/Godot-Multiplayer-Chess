@@ -20,6 +20,7 @@ func add_piece(data):
 	piece.pieceType = data["type"] #pieces[i.to_lower()]
 	piece.set_pos(data["pos"]) #(Vector2(x,y))
 	piece.global_position = get_grid_pos(data["pos"])
+	piece.id = data["id"]
 	pieces[data["id"]] = piece
 	
 
@@ -81,7 +82,7 @@ func _init_from_map(map):
 			x += 1
 
 func _input(event: InputEvent) -> void:
-	if(event.is_action_pressed("click")):
+	if(get_window().has_focus() and event.is_action_pressed("click")):
 		_check_select()
 
 
@@ -95,27 +96,30 @@ func _check_select():
 	for i : Piece in $pieces.get_children():
 		if(i.boardpos == pos):
 			if(selected):
-				proccess_move.rpc(selected,i)
+				proccess_move(selected,i)
 			else:
 				select(i)
 			return
 	
 	if(selected):
-		move(selected,pos)
+		move.rpc(selected.id,pos)
 	
 	unselect() 
 
 func capture(i : Piece):
 	i.capture()
 
-func move(i : Piece,pos : Vector2):
-	i.move_to(pos)
-
 @rpc("any_peer","call_local","reliable")
+func move(i : int,pos : Vector2, to_capture : int = -1):
+	var piece = pieces[i]
+	if(to_capture != -1):
+		var cap = pieces[to_capture]
+		capture(cap)
+	piece.move_to(pos)
+
 func proccess_move(to_move : Piece, other_piece : Piece):
 	if(to_move.is_white != other_piece.is_white):
-		move(to_move,other_piece.boardpos)
-		capture(other_piece)
+		move.rpc(to_move.id,other_piece.boardpos,other_piece.id)
 		unselect()
 	else:
 		select(other_piece)

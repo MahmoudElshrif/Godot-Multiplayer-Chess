@@ -17,9 +17,8 @@ signal _select(piece)
 	get: return pieceType
 
 var selected := false
-
-
 var boardpos = Vector2.ZERO
+var id := 0
 
 func set_iswhite():
 	if(is_white):

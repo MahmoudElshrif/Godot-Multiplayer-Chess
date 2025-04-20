@@ -5,10 +5,22 @@ const PIECEOBJ := preload("res://piece.tscn")
 
 var selected : Piece = null
 
+var pieces = {}
 
 func _ready() -> void:
 	Global.board = self
-	_init_from_map("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+	if(ServerManager.multiplayer.is_server()):
+		_init_from_map("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+
+@rpc("call_local","reliable")
+func add_piece(data):
+	var piece = PIECEOBJ.instantiate()
+	$pieces.add_child(piece)
+	piece.is_white = data["is_white"] #i == i.to_lower()
+	piece.pieceType = data["type"] #pieces[i.to_lower()]
+	piece.set_pos(data["pos"]) #(Vector2(x,y))
+	piece.global_position = get_grid_pos(data["pos"])
+	pieces[data["id"]] = piece
 	
 
 func get_pos_in_grid(pos : Vector2):
@@ -44,6 +56,7 @@ func _init_from_map(map):
 	}
 	var x = 0
 	var y = 0
+	var id = 0
 	for i in map:
 		i = i as String
 		if(i.is_valid_int()):
@@ -54,12 +67,17 @@ func _init_from_map(map):
 			while(x > 7):
 				x -= 8
 				y += 1
-			var piece = PIECEOBJ.instantiate()
-			$pieces.add_child(piece)
-			piece.is_white = i == i.to_lower()
-			piece.pieceType = pieces[i.to_lower()]
-			piece.set_pos(Vector2(x,y))
-			piece.global_position = get_grid_pos(Vector2(x,y))
+			
+			var data = {
+				"is_white" : i == i.to_lower(),
+				"type": pieces[i.to_lower()],
+				"pos": Vector2(x,y),
+				"id": id
+			}
+			
+			add_piece.rpc(data)
+			
+			id += 1
 			x += 1
 
 func _input(event: InputEvent) -> void:
@@ -77,7 +95,7 @@ func _check_select():
 	for i : Piece in $pieces.get_children():
 		if(i.boardpos == pos):
 			if(selected):
-				proccess_move(selected,i)
+				proccess_move.rpc(selected,i)
 			else:
 				select(i)
 			return
@@ -93,6 +111,7 @@ func capture(i : Piece):
 func move(i : Piece,pos : Vector2):
 	i.move_to(pos)
 
+@rpc("any_peer","call_local","reliable")
 func proccess_move(to_move : Piece, other_piece : Piece):
 	if(to_move.is_white != other_piece.is_white):
 		move(to_move,other_piece.boardpos)

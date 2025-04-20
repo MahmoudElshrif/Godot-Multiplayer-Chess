@@ -11,18 +11,29 @@ config_version=5
 [application]
 
 config/name="chess"
-run/main_scene="uid://dlabepex32pkd"
+run/main_scene="uid://bvpaca8uwuy1j"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 Global="*res://global.tscn"
+ServerManager="*res://server_manager.tscn"
+
+[debug]
+
+multirun/number_of_windows=2
+multirun/add_custom_args=true
+multirun/window_args=["listen", "join"]
 
 [display]
 
 window/size/viewport_width=1270
 window/size/viewport_height=720
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/multirun/plugin.cfg")
 
 [input]
 

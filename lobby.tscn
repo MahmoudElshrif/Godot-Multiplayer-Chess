@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://bvpaca8uwuy1j"]
+
+[ext_resource type="Script" uid="uid://cesk2fiy25i0o" path="res://lobby.gd" id="1_ll2xe"]
+
+[node name="lobby" type="Node2D"]
+script = ExtResource("1_ll2xe")
+
+[node name="join" type="Button" parent="."]
+offset_left = 154.0
+offset_top = 336.0
+offset_right = 192.0
+offset_bottom = 367.0
+scale = Vector2(3.19601, 3.19601)
+text = "Join"
+
+[node name="host" type="Button" parent="."]
+offset_left = 476.0
+offset_top = 336.0
+offset_right = 520.0
+offset_bottom = 367.0
+scale = Vector2(3.19601, 3.19601)
+text = "Host"
+
+[connection signal="pressed" from="join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="host" to="." method="_on_host_pressed"]

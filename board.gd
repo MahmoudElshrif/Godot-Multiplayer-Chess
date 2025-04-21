@@ -2,6 +2,8 @@ extends Node2D
 class_name Board
 
 const PIECEOBJ := preload("res://piece.tscn")
+signal _flip
+signal _host_finished_board
 
 var selected : Piece = null
 var whiteturn := true
@@ -14,9 +16,20 @@ func _ready() -> void:
 	if(ServerManager.multiplayer.is_server()):
 		is_white = true
 		_init_from_map("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+	else:
+		await _host_finished_board
+	
+	if(!is_white):
+		flip()
 
 func switch_turn():
 	whiteturn = not whiteturn
+
+func flip():
+	_flip.emit()
+	for i in $pieces.get_children():
+		i = i as Piece
+		i.flip()
 
 @rpc("call_local","reliable")
 func add_piece(data):
@@ -28,7 +41,10 @@ func add_piece(data):
 	piece.global_position = get_grid_pos(data["pos"])
 	piece.id = data["id"]
 	pieces[data["id"]] = piece
-	
+
+@rpc("reliable")
+func finished_init_board():
+	_host_finished_board.emit()
 
 func win(white : bool):
 	$wins.show()
@@ -97,6 +113,8 @@ func _init_from_map(map):
 			
 			id += 1
 			x += 1
+	
+	finished_init_board.rpc()
 
 func _input(event: InputEvent) -> void:
 	if(get_window().has_focus() and event.is_action_pressed("click")):

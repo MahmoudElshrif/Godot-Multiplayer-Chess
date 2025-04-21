@@ -1,9 +1,24 @@
-[gd_scene load_steps=2 format=3 uid="uid://dlabepex32pkd"]
+[gd_scene load_steps=3 format=3 uid="uid://dlabepex32pkd"]
 
 [ext_resource type="PackedScene" uid="uid://8ii3iv2odgl2" path="res://board.tscn" id="1_wtcfe"]
 
+[sub_resource type="GDScript" id="GDScript_wtcfe"]
+script/source = "extends Node2D
+
+
+func flip():
+	$Camera2D.rotation_degrees = 180
+"
+
 [node name="Node2D" type="Node2D"]
+script = SubResource("GDScript_wtcfe")
 
 [node name="board" parent="." instance=ExtResource("1_wtcfe")]
 position = Vector2(628, 360)
 scale = Vector2(1.13909, 1.13909)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(635, 360)
+ignore_rotation = false
+
+[connection signal="_flip" from="board" to="." method="flip"]

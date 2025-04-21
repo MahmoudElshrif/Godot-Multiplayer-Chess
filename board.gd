@@ -4,13 +4,19 @@ class_name Board
 const PIECEOBJ := preload("res://piece.tscn")
 
 var selected : Piece = null
-
+var whiteturn := true
+var is_white := false
 var pieces = {}
+var isgameover := false
 
 func _ready() -> void:
 	Global.board = self
 	if(ServerManager.multiplayer.is_server()):
+		is_white = true
 		_init_from_map("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+
+func switch_turn():
+	whiteturn = not whiteturn
 
 @rpc("call_local","reliable")
 func add_piece(data):
@@ -22,6 +28,17 @@ func add_piece(data):
 	piece.global_position = get_grid_pos(data["pos"])
 	piece.id = data["id"]
 	pieces[data["id"]] = piece
+	
+
+func win(white : bool):
+	$wins.show()
+	if(white):
+		$wins.text = "wHITE"
+	else:
+		$wins.text = "BalcK"
+	
+	$wins.text += " Winss!!1!"
+	isgameover = true
 	
 
 func get_pos_in_grid(pos : Vector2):
@@ -70,7 +87,7 @@ func _init_from_map(map):
 				y += 1
 			
 			var data = {
-				"is_white" : i == i.to_lower(),
+				"is_white" : i != i.to_lower(),
 				"type": pieces[i.to_lower()],
 				"pos": Vector2(x,y),
 				"id": id
@@ -87,6 +104,8 @@ func _input(event: InputEvent) -> void:
 
 
 func _check_select():
+	if(isgameover):
+		return
 	var pos = get_pos_in_grid(get_global_mouse_position())
 	
 	if(selected and pos == selected.boardpos):
@@ -102,29 +121,41 @@ func _check_select():
 			return
 	
 	if(selected):
-		move.rpc(selected.id,pos)
+		move.rpc(selected.id,pos,is_white)
 	
 	unselect() 
 
 func capture(i : Piece):
 	i.capture()
+	if(i.pieceType == 0):
+		win(not i.is_white)
 
 @rpc("any_peer","call_local","reliable")
-func move(i : int,pos : Vector2, to_capture : int = -1):
-	var piece = pieces[i]
+func move(i : int,pos : Vector2,team : bool, to_capture : int = -1):
+	#if(multiplayer.get_unique_id() == multiplayer.get_remote_sender_id()):
+		#print(str(multiplayer.get_unique_id()) + " " + str(team) + " " + str(is_white) + " " + str(whiteturn))
+	if(whiteturn != team):
+		return
+	var piece :Piece= pieces[i]
+	#print(piece.is_white)
+	if(piece.is_white != team):
+		return
 	if(to_capture != -1):
 		var cap = pieces[to_capture]
 		capture(cap)
 	piece.move_to(pos)
+	switch_turn()
 
 func proccess_move(to_move : Piece, other_piece : Piece):
 	if(to_move.is_white != other_piece.is_white):
-		move.rpc(to_move.id,other_piece.boardpos,other_piece.id)
+		move.rpc(to_move.id,other_piece.boardpos,is_white,other_piece.id)
 		unselect()
 	else:
 		select(other_piece)
 
 func select(piece):
+	if(piece.is_white != is_white):
+		return
 	unselect()
 	selected = piece
 	selected.select()

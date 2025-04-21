@@ -52,3 +52,12 @@ offset_right = 283.5
 offset_bottom = 283.5
 
 [node name="pieces" type="Node2D" parent="."]
+
+[node name="wins" type="Label" parent="."]
+visible = false
+offset_left = -403.0
+offset_top = -112.0
+offset_right = -310.0
+offset_bottom = -89.0
+scale = Vector2(8.59388, 8.59388)
+text = "WhITE WINs"

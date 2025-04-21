@@ -22,6 +22,8 @@ var id := 0
 
 func set_iswhite():
 	if(is_white):
+		$sprite.region_rect.position.y = 0
+	else:
 		$sprite.region_rect.position.y = 135
 
 func set_type():

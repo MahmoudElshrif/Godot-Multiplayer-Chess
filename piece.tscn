@@ -1,13 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://db40yeb6s1q1"]
+[gd_scene load_steps=5 format=3 uid="uid://db40yeb6s1q1"]
 
 [ext_resource type="Script" uid="uid://dch0vkg0tes4u" path="res://piece.gd" id="1_3makh"]
 [ext_resource type="Texture2D" uid="uid://b20mjlc38q4pl" path="res://Chess_Pieces_Sprite.svg" id="2_hisf2"]
+[ext_resource type="Script" uid="uid://7q7ux5mscwe6" path="res://MovesGenerator.gd" id="2_sk825"]
 
-[sub_resource type="Resource" id="Resource_hisf2"]
+[sub_resource type="Resource" id="Resource_y1xrd"]
+script = ExtResource("2_sk825")
+metadata/_custom_type_script = ExtResource("2_sk825")
 
 [node name="piece" type="Node2D"]
 script = ExtResource("1_3makh")
-move_generator = SubResource("Resource_hisf2")
+move_generator = SubResource("Resource_y1xrd")
 
 [node name="sprite" type="Sprite2D" parent="."]
 position = Vector2(67.5, 67.5)

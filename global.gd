@@ -11,3 +11,9 @@ func get_tile_size():
 
 func get_grid_pos(pos : Vector2):
 	return board.get_grid_pos(pos)
+
+func get_piece(pos : Vector2):
+	return board.board[pos.x][pos.y]
+
+func get_piece_from_id(id : int):
+	return board.pieces[id]

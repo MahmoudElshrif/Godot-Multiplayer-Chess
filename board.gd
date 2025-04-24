@@ -13,6 +13,7 @@ var isgameover := false
 var board = []
 var legalmoves = []
 var legalcapture = []
+var selectind = 0
 
 func _ready() -> void:
 	for i in range(8):
@@ -177,19 +178,10 @@ func move(i : int,pos : Vector2,team : bool, to_capture : int = -1):
 
 
 func get_legal_moves(piece : Piece):
-	var dir = -1 if piece.is_white else 1
-	var y = piece.boardpos.y
-	legalmoves = []
-	legalcapture = []
+	var moves = piece.legalmoves()
 	
-	while(y > 0 and y < 8):
-		y += dir
-		if(board[piece.boardpos.x][y] != null):
-			if(pieces[board[piece.boardpos.x][y]].is_white != piece.is_white):
-				legalcapture.append(Vector2(piece.boardpos.x,y))
-			break
-		
-		legalmoves.append(Vector2(piece.boardpos.x,y))
+	legalmoves = moves[0]
+	legalcapture = moves[1]
 
 	
 
@@ -222,4 +214,10 @@ func get_tile_size():
 	return $ColorRect.get_global_rect().size.x / 8
 
 func _physics_process(delta: float) -> void:
-	pass
+	var moveslist = legalmoves + legalcapture
+	
+	if(moveslist.size() > 0):
+		selectind += 1
+		selectind %= moveslist.size()
+		$ColorRect.material.set_shader_parameter("selected",moveslist[selectind])
+		

@@ -69,3 +69,24 @@ func select():
 func unselect():
 	selected = false
 	#show()
+
+
+func legalmoves():
+	return pawn_moves
+
+func pawn_moves():
+	var dir = -1 if is_white else 1
+	var y = boardpos.y
+	var legalmoves = []
+	var legalcapture = []
+	
+	while(y > 0 and y < 8):
+		y += dir
+		if(Global.get_piece(Vector2(boardpos.x,y)) != null):
+			if(Global.get_piece_from_id(Global.get_piece(Vector2(boardpos.x,y))).is_white != is_white):
+				legalcapture.append(Vector2(boardpos.x,y))
+			break
+		
+		legalmoves.append(Vector2(boardpos.x,y))
+	
+	return [legalmoves,legalcapture]

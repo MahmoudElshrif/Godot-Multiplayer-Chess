@@ -10,8 +10,17 @@ var whiteturn := true
 var is_white := false
 var pieces = {}
 var isgameover := false
+var board = []
+var legalmoves = []
+var legalcapture = []
 
 func _ready() -> void:
+	for i in range(8):
+		var l = []
+		for x in range(8):
+			l.append(null)
+		board.append(l)
+	
 	Global.board = self
 	if(ServerManager.multiplayer.is_server()):
 		is_white = true
@@ -41,6 +50,7 @@ func add_piece(data):
 	piece.global_position = get_grid_pos(data["pos"])
 	piece.id = data["id"]
 	pieces[data["id"]] = piece
+	board[piece.boardpos.x][piece.boardpos.y] = piece.id
 
 @rpc("reliable")
 func finished_init_board():
@@ -125,23 +135,21 @@ func _check_select():
 	if(isgameover):
 		return
 	var pos = get_pos_in_grid(get_global_mouse_position())
-	
-	if(selected and pos == selected.boardpos):
-		unselect()
-		return
-	
-	for i : Piece in $pieces.get_children():
-		if(i.boardpos == pos):
-			if(selected):
-				proccess_move(selected,i)
-			else:
-				select(i)
-			return
-	
-	if(selected):
+	if(pos in legalmoves):
 		move.rpc(selected.id,pos,is_white)
+		return
+	var pieceid = board[pos.x][pos.y]
+	if(pieceid != null):
+		var i : Piece = pieces[board[pos.x][pos.y]]
+		if(pos in legalcapture):
+			proccess_move(selected,i)
+			return
+		if(selected == i):
+			unselect()
+		elif(i.is_white == is_white):
+			select(i)
+
 	
-	unselect() 
 
 func capture(i : Piece):
 	i.capture()
@@ -161,8 +169,29 @@ func move(i : int,pos : Vector2,team : bool, to_capture : int = -1):
 	if(to_capture != -1):
 		var cap = pieces[to_capture]
 		capture(cap)
+	unselect()
+	board[piece.boardpos.x][piece.boardpos.y] = null
 	piece.move_to(pos)
+	board[piece.boardpos.x][piece.boardpos.y] = piece.id
 	switch_turn()
+
+
+func get_legal_moves(piece : Piece):
+	var dir = -1 if piece.is_white else 1
+	var y = piece.boardpos.y
+	legalmoves = []
+	legalcapture = []
+	
+	while(y > 0 and y < 8):
+		y += dir
+		if(board[piece.boardpos.x][y] != null):
+			if(pieces[board[piece.boardpos.x][y]].is_white != piece.is_white):
+				legalcapture.append(Vector2(piece.boardpos.x,y))
+			break
+		
+		legalmoves.append(Vector2(piece.boardpos.x,y))
+
+	
 
 func proccess_move(to_move : Piece, other_piece : Piece):
 	if(to_move.is_white != other_piece.is_white):
@@ -178,6 +207,7 @@ func select(piece):
 	selected = piece
 	selected.select()
 	$ColorRect.material.set_shader_parameter("selected",selected.boardpos)
+	get_legal_moves(piece)
 	
 
 func unselect():
@@ -185,6 +215,8 @@ func unselect():
 	if(selected):
 		selected.unselect()
 	selected = null
+	legalmoves = []
+	legalcapture = []
 
 func get_tile_size():
 	return $ColorRect.get_global_rect().size.x / 8

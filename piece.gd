@@ -30,7 +30,6 @@ func set_type():
 	$sprite.region_rect.position.x = $sprite.get_rect().size.x * pieceType
 
 func flip():
-	print("niffa")
 	$sprite.rotation_degrees = 180
 
 func set_pos(pos : Vector2):

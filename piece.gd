@@ -3,12 +3,15 @@ class_name Piece
 
 signal _select(piece)
 
+@export var move_generator : Resource
+
 @export var is_white : bool:
 	set(value): 
 		is_white = value
 		set_iswhite()
 	get: return is_white
 
+const types = ["King","Queen","Bishop","Knight","Rook","Pawn"]
 
 @export_enum("King","Queen","Bishop","Knight","Rook","Pawn") var pieceType : int:
 	set(value):
@@ -19,6 +22,7 @@ signal _select(piece)
 var selected := false
 var boardpos = Vector2.ZERO
 var id := 0
+var moved = false
 
 func set_iswhite():
 	if(is_white):
@@ -49,14 +53,15 @@ func _physics_process(delta: float) -> void:
 		else:
 			if(selected):
 				unselect()
-	
+
+
 func capture():
 	queue_free()
 
 func move_to(pos : Vector2):
 	boardpos = pos
+	moved = true
 	var t = create_tween()
-	
 	t.tween_property(self,"global_position",Global.get_grid_pos(pos),0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 func mouse_hover():
@@ -72,21 +77,81 @@ func unselect():
 
 
 func legalmoves():
-	return pawn_moves
+	var type = types[pieceType]
+	
+	if(type == "Pawn"):
+		return pawn_moves()
+	if(type == "Rook"):
+		return rook_moves()
+	if(type == "Queen"):
+		return queen_moves()
+	if(type == "Bishop"):
+		return bishop_moves()
+	
+	return [[],[]]
 
 func pawn_moves():
-	var dir = -1 if is_white else 1
-	var y = boardpos.y
 	var legalmoves = []
-	var legalcapture = []
+	var legalcaptures = []
 	
-	while(y > 0 and y < 8):
-		y += dir
-		if(Global.get_piece(Vector2(boardpos.x,y)) != null):
-			if(Global.get_piece_from_id(Global.get_piece(Vector2(boardpos.x,y))).is_white != is_white):
-				legalcapture.append(Vector2(boardpos.x,y))
-			break
+	var dir = -1 if is_white else 1
+	
+	if(Global.get_piece_at(boardpos + Vector2(0,dir)) == null):
+		legalmoves.append(boardpos + Vector2(0,dir))
+	if(Global.get_piece_at(boardpos + Vector2(1,dir)) != null and Global.get_piece_at(boardpos + Vector2(1,dir)).is_white != is_white):
+		legalcaptures.append(boardpos + Vector2(1,dir))
+	if(Global.get_piece_at(boardpos + Vector2(-1,dir)) != null and Global.get_piece_at(boardpos + Vector2(-1,dir)).is_white != is_white):
+		legalcaptures.append(boardpos + Vector2(-1,dir))
+	
+	if(!moved):
+		if(legalmoves.size() == 1):
+			if(Global.get_piece_at(boardpos + Vector2(0,dir * 2)) == null):
+				legalmoves.append(boardpos + Vector2(0,dir * 2))
+	
+	return [legalmoves,legalcaptures]
+	
+
+func rook_moves():
+	var dirs = [Vector2(-1,0),Vector2(0,1),Vector2(1,0),Vector2(0,-1)]
+	
+	return _line_moves(dirs)
+
+func bishop_moves():
+	var dirs = [Vector2(-1,-1),Vector2(-1,1),Vector2(1,1),Vector2(1,-1)]
+	
+	return _line_moves(dirs)
+
+func queen_moves():
+	var dirs = [Vector2(-1,0),Vector2(0,1),Vector2(1,0),Vector2(0,-1)]
+	dirs += [Vector2(-1,-1),Vector2(-1,1),Vector2(1,1),Vector2(1,-1)]
+	
+	
+	return _line_moves(dirs)
+
+
+func is_inside_bounds(pos : Vector2):
+	if(pos.x < 0 or pos.x > 7):
+		return false
+	if(pos.y < 0 or pos.y > 7):
+		return false
 		
-		legalmoves.append(Vector2(boardpos.x,y))
-	
-	return [legalmoves,legalcapture]
+	return true
+
+func _line_moves(directions: Array) -> Array:
+	var board = Global.board
+	var moves := []
+	var captures := []
+
+	for dir in directions:
+		var pos :Vector2= boardpos + dir
+		while is_inside_bounds(pos):
+			var target = Global.get_piece_at(pos)
+			if target == null:
+				moves.append(pos)
+			else:
+				if target.is_white != is_white:
+					captures.append(pos)
+				break
+			pos += dir
+
+	return [moves, captures]

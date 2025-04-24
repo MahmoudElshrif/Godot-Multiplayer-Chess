@@ -79,6 +79,12 @@ func get_pos_in_grid(pos : Vector2):
 	
 	return pos
 
+
+func get_piece_at(pos : Vector2):
+	if(board[pos.x][pos.y] == null):
+		return null
+	return pieces[board[pos.x][pos.y]]
+
 func get_grid_pos(pos: Vector2):
 	pos *= get_tile_size()
 	pos += $ColorRect.global_position

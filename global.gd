@@ -17,3 +17,6 @@ func get_piece(pos : Vector2):
 
 func get_piece_from_id(id : int):
 	return board.pieces[id]
+
+func get_piece_at(pos : Vector2) -> Piece:
+	return board.get_piece_at(pos)
